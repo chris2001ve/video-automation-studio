@@ -1,7 +1,7 @@
 {
   "name": "video-automation-studio",
   "productName": "Video Automation Studio",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Generación de videos con IA por lotes (Seedance y otros) usando APIs oficiales",
   "main": "dist-electron/main.js",
   "private": true,
@@ -16,7 +16,8 @@
     "start": "electron .",
     "dist": "npm run build && electron-builder",
     "dist:win": "npm run build && electron-builder --win --publish never",
-    "dist:mac": "npm run build && electron-builder --mac"
+    "dist:mac": "npm run build && electron-builder --mac",
+    "dist:linux": "npm run build && electron-builder --linux --publish never"
   },
   "build": {
     "appId": "com.tuisladigital.videoautomationstudio",
@@ -64,9 +65,53 @@
     },
     "linux": {
       "target": [
-        "AppImage"
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        }
       ],
-      "icon": "build/icon.png"
+      "icon": "build/icon.png",
+      "category": "AudioVideo",
+      "maintainer": "chris2001ve <chris2001ve@users.noreply.github.com>",
+      "synopsis": "Generación de videos con IA por lotes",
+      "description": "Genera videos con IA (Seedance y otros) por lotes usando APIs oficiales.",
+      "desktop": {
+        "entry": {
+          "Name": "Video Automation Studio",
+          "Comment": "Generación de videos con IA por lotes",
+          "Categories": "AudioVideo;Video;"
+        }
+      },
+      "syncDesktopName": true
+    },
+    "deb": {
+      "depends": [
+        "libgtk-3-0 | libgtk-3-0t64",
+        "libnss3",
+        "libxss1",
+        "libxtst6",
+        "xdg-utils",
+        "libatspi2.0-0 | libatspi2.0-0t64",
+        "libuuid1",
+        "libasound2 | libasound2t64"
+      ],
+      "artifactName": "video-automation-studio_${version}_amd64.${ext}",
+      "recommends": [
+        "libnotify4",
+        "libsecret-1-0",
+        "libappindicator3-1"
+      ]
+    },
+    "appImage": {
+      "artifactName": "Video-Automation-Studio-${version}.${ext}"
     }
   },
   "dependencies": {
@@ -91,6 +136,9 @@
     "vitest": "^3.2.7"
   },
   "author": {
-    "name": "chris2001ve"
-  }
+    "name": "chris2001ve",
+    "email": "chris2001ve@users.noreply.github.com"
+  },
+  "homepage": "https://github.com/chris2001ve/video-automation-studio",
+  "desktopName": "video-automation-studio.desktop"
 }

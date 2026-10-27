@@ -46,17 +46,26 @@ npm run dev        # abre la app en modo desarrollo (Vite + Electron)
 
 Para probar sin gastar créditos, elige el proveedor **Demo (simulado)**.
 
-## Descargar el instalador de Windows
+## Descargar los instaladores
 
-Cada versión publicada incluye el instalador `Video-Automation-Studio-Setup-x.y.z.exe` en la sección **Releases** del repositorio. Como no está firmado digitalmente, Windows SmartScreen puede mostrar "Windows protegió tu PC": pulsa **Más información → Ejecutar de todas formas**.
+Cada versión publicada en **Releases** incluye:
 
-Para generar una versión nueva: `git tag v1.0.1 && git push --tags`. También puedes ejecutarlo a mano en **Actions → Instalador de Windows → Run workflow**.
+| Sistema | Archivo | Cómo instalar |
+|---|---|---|
+| Windows 10/11 | `Video-Automation-Studio-Setup-x.y.z.exe` | Doble clic. Como no está firmado, SmartScreen puede avisar: **Más información → Ejecutar de todas formas** |
+| Zorin OS / Ubuntu / Debian / Linux Mint | `video-automation-studio_x.y.z_amd64.deb` | Doble clic (abre **Software**) o `sudo apt install ./video-automation-studio_x.y.z_amd64.deb` |
+| Cualquier Linux | `Video-Automation-Studio-x.y.z.AppImage` | `chmod +x Video-Automation-Studio-*.AppImage` y ejecútalo (puede requerir `sudo apt install libfuse2`) |
+
+En Zorin OS, el .deb agrega la app al menú de aplicaciones con su ícono. Para desinstalarla: `sudo apt remove video-automation-studio`.
+
+Para publicar una versión nueva: `git tag v1.0.2 && git push --tags`. También puedes ejecutar la compilación a mano en **Actions → Instaladores → Run workflow**.
 
 ## Compilar instaladores
 
 ```bash
 npm run dist:win   # instalador NSIS para Windows (.exe)
 npm run dist:mac   # .dmg para macOS (debe ejecutarse en un Mac)
+npm run dist:linux # .deb y AppImage (Zorin OS, Ubuntu…)
 npm run dist       # para la plataforma actual
 ```
 

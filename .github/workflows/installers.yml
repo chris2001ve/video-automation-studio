@@ -1,0 +1,43 @@
+name: Instaladores
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            script: dist:win
+            files: release/*.exe
+            name: Windows
+          # Ubuntu 22.04 (base de Zorin OS 17) para que funcione también en versiones más nuevas
+          - os: ubuntu-22.04
+            script: dist:linux
+            files: |
+              release/*.deb
+              release/*.AppImage
+            name: Linux-ZorinOS
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci
+      - run: npm test
+      - run: npm run ${{ matrix.script }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Video-Automation-Studio-${{ matrix.name }}
+          path: ${{ matrix.files }}
+          if-no-files-found: error
+      - name: Publicar en Releases (solo con etiqueta v*)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.files }}
+          generate_release_notes: true
