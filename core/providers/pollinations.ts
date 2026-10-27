@@ -1,26 +1,34 @@
-import type { VideoProvider } from './types';
+import type { GenerationParams, ProviderId } from '../types';
 import type { FetchFn } from './http';
-import type { GenerationParams, ProviderJobState } from '../types';
+import type { CreatedTask, TaskStatus, VideoProvider } from './types';
 
 export class PollinationsProvider implements VideoProvider {
+  readonly id: ProviderId = 'pollinations';
+  readonly label = 'Gratuito (Pollinations)';
+
   constructor(private fetchFn: FetchFn) {}
 
   async testConnection(): Promise<string> {
     return 'Servidor de video gratuito conectado correctamente';
   }
 
-  async submitJob(prompt: string, params: GenerationParams): Promise<{ taskId: string }> {
+  async createTask(prompt: string, _params: GenerationParams): Promise<CreatedTask> {
     const cleanPrompt = encodeURIComponent(prompt.trim());
-    // Endpoint abierto para generación de video
     const videoUrl = `https://image.pollinations.ai/prompt/${cleanPrompt}?model=video&width=720&height=1280&seed=${Date.now()}`;
-    return { taskId: videoUrl };
+    return {
+      taskId: videoUrl,
+      responseUrl: videoUrl,
+    };
   }
 
-  async checkStatus(taskId: string): Promise<ProviderJobState> {
-    // Al ser endpoint directo, retorna completado para proceder a la descarga
+  async getStatus(task: CreatedTask): Promise<TaskStatus> {
     return {
-      state: 'completed',
-      videoUrl: taskId,
+      state: 'succeeded',
+      videoUrl: task.taskId,
     };
+  }
+
+  async cancel(_task: CreatedTask): Promise<void> {
+    // No requiere cancelación en servidor
   }
 }
