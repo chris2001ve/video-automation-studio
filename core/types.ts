@@ -1,4 +1,4 @@
-export type ProviderId = 'fal' | 'byteplus' | 'mock';
+export type ProviderId = 'fal' | 'byteplus' | 'pollinations' | 'mock';
 
 export type AspectRatio = '9:16' | '16:9' | '1:1' | '4:3' | '3:4' | '21:9';
 export type Resolution = '480p' | '720p' | '1080p';
@@ -102,7 +102,7 @@ export interface EngineState {
 export const DEFAULT_SETTINGS: Settings = {
   language: 'es',
   outputDir: '',
-  provider: 'fal',
+  provider: 'pollinations',
   models: {
     fal: [
       'bytedance/seedance-2.5/text-to-video',
@@ -110,25 +110,27 @@ export const DEFAULT_SETTINGS: Settings = {
       'fal-ai/bytedance/seedance/v1.5/pro/text-to-video',
     ],
     byteplus: ['dreamina-seedance-2-5-260628', 'seedance-1-0-pro-250528'],
+    pollinations: ['pollinations-video-free'],
     mock: ['demo-simulado'],
   },
   selectedModel: {
     fal: 'bytedance/seedance-2.5/text-to-video',
     byteplus: 'dreamina-seedance-2-5-260628',
+    pollinations: 'pollinations-video-free',
     mock: 'demo-simulado',
   },
   durationSec: 10,
   aspectRatio: '9:16',
   resolution: '720p',
   variantsPerPrompt: 1,
-  parallel: 2,
+  parallel: 1,
   maxRetries: 3,
   pollIntervalSec: 8,
   negativePrompt: '',
   onePromptPerLine: false,
   proxyUrl: '',
-  pricePerSecond: { fal: 0, byteplus: 0, mock: 0 },
-  requestsPerMinute: { fal: 10, byteplus: 10, mock: 60 },
+  pricePerSecond: { fal: 0, byteplus: 0, pollinations: 0, mock: 0 },
+  requestsPerMinute: { fal: 10, byteplus: 10, pollinations: 30, mock: 60 },
   geminiModel: 'gemini-2.5-flash',
   generateAudio: true,
   remoteEnabled: false,
