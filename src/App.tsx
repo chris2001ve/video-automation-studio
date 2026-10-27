@@ -12,6 +12,8 @@ import { QueueTable } from './components/QueueTable';
 import { ServiceBanner } from './components/ServiceBanner';
 import { SettingsModal } from './components/SettingsModal';
 import { makeT } from './i18n';
+import { PairingScreen } from './components/PairingScreen';
+import { getRemoteToken, setRemoteToken } from './remoteApi';
 
 export default function App() {
   const [api, setApi] = useState<StudioApi | null>(null);
@@ -30,16 +32,35 @@ export default function App() {
   const [enhancing, setEnhancing] = useState(false);
   const toastTimer = useRef<number | undefined>(undefined);
 
+  const [pairing, setPairing] = useState<{ error: string | null } | null>(null);
+  const [online, setOnline] = useState(true);
+  const [attempt, setAttempt] = useState(0);
+
   useEffect(() => {
-    let off1 = () => {}, off2 = () => {};
+    const offs: (() => void)[] = [];
+    let cancelled = false;
     getApi().then(async (a) => {
-      const d = await a.init();
+      let d: InitData;
+      try {
+        d = await a.init();
+      } catch (e: any) {
+        if (e?.name === 'RemoteAuthError') {
+          if (!cancelled) setPairing({ error: getRemoteToken() ? e.message : null });
+          return;
+        }
+        throw e;
+      }
+      if (cancelled) return;
+      setPairing(null);
       setApi(a); setBoot(d); setSettings(d.settings); setState(d.state); setLogs(d.logs); setKeys(d.keys);
-      off1 = a.onState(setState);
-      off2 = a.onLog((l) => setLogs((prev) => (prev.length > 1500 ? [...prev.slice(-1200), l] : [...prev, l])));
+      offs.push(a.onState(setState));
+      offs.push(a.onLog((l) => setLogs((prev) => (prev.length > 1500 ? [...prev.slice(-1200), l] : [...prev, l]))));
+      if (a.onSettings) offs.push(a.onSettings(setSettings));
+      if (a.onKeys) offs.push(a.onKeys(setKeys));
+      if (a.onConnection) offs.push(a.onConnection(setOnline));
     });
-    return () => { off1(); off2(); };
-  }, []);
+    return () => { cancelled = true; offs.forEach((f) => f()); };
+  }, [attempt]);
 
   const t = useMemo(() => makeT(settings?.language ?? 'es'), [settings?.language]);
 
@@ -64,6 +85,15 @@ export default function App() {
     if (importedMeta && importedMeta.length === parsed.length && importedMeta.every((m, i) => m.prompt === parsed[i])) return importedMeta;
     return parsed.map((prompt) => ({ prompt }));
   }, [mode, single, text, settings, importedMeta]);
+
+  if (pairing) {
+    return (
+      <PairingScreen
+        error={pairing.error}
+        onSubmit={(code) => { setRemoteToken(code); setAttempt((n) => n + 1); }}
+      />
+    );
+  }
 
   if (!api || !settings || !state || !boot) {
     return <div className="flex h-full items-center justify-center text-slate-400">Cargando…</div>;
@@ -125,7 +155,14 @@ export default function App() {
   return (
     <div className="flex min-h-full flex-col gap-3 p-3 pb-6 lg:p-4 lg:pb-4 tall:h-full">
       <Header t={t} version={boot.version} state={state} onSettings={() => setShowSettings(true)} />
-      {!window.studio && (
+      {boot.mode === 'remote' && (
+        <div className={`rounded-xl border px-3 py-2 text-xs ${online ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-100' : 'border-amber-400/50 bg-amber-500/15 text-amber-100'}`}>
+          {online
+            ? (settings.language === 'en' ? `Controlling your PC (${boot.host}) over Wi-Fi. Videos are saved on the PC.` : `Controlando tu PC (${boot.host}) por Wi-Fi. Los videos se guardan en el PC.`)
+            : (settings.language === 'en' ? 'Connection to the PC lost. Reconnecting…' : 'Se perdió la conexión con el PC. Reconectando…')}
+        </div>
+      )}
+      {boot.mode === 'demo' && (
         <div className="rounded-xl border border-accent/40 bg-accent/10 px-3 py-2 text-xs text-cyan-100">
           {settings.language === 'en'
             ? 'Test mode in the browser: videos are simulated. Install the desktop app to generate real videos.'
@@ -135,7 +172,7 @@ export default function App() {
       {state.serviceIssue && <ServiceBanner t={t} issue={state.serviceIssue} label={boot.providers[state.serviceIssue.provider]} />}
       <ModeBar
         t={t} mode={mode} setMode={setMode} queued={queuedCount}
-        onImport={importFile} onFolder={() => api.openOutputFolder()} onSettings={() => setShowSettings(true)}
+        onImport={importFile} onFolder={boot.mode === 'desktop' || !boot.mode ? () => api.openOutputFolder() : undefined} onSettings={() => setShowSettings(true)}
       />
       <div className="grid grid-cols-[minmax(0,1fr)] gap-3 lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(0,1.45fr)_minmax(380px,1fr)]">
         <div className="contents lg:flex lg:min-h-0 lg:flex-col lg:gap-3">

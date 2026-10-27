@@ -74,6 +74,10 @@ export interface Settings {
   requestsPerMinute: Record<ProviderId, number>;
   geminiModel: string;
   generateAudio: boolean;
+  /** Control remoto desde el celular en la misma red Wi-Fi. */
+  remoteEnabled: boolean;
+  remotePort: number;
+  remoteToken: string;
 }
 
 export type LogLevel = 'info' | 'warn' | 'error' | 'success';
@@ -127,4 +131,7 @@ export const DEFAULT_SETTINGS: Settings = {
   requestsPerMinute: { fal: 10, byteplus: 10, mock: 60 },
   geminiModel: 'gemini-2.5-flash',
   generateAudio: true,
+  remoteEnabled: false,
+  remotePort: 8787,
+  remoteToken: ''
 };

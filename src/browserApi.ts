@@ -26,7 +26,7 @@ export function createBrowserApi(): StudioApi {
   log('info', 'Vista previa en navegador: se usa el proveedor simulado (sin API real)');
   const ok = async () => {};
   return {
-    init: async () => ({ settings, state: engine.snapshot(false), logs: [...logs], keys: { fal: false, byteplus: false, gemini: false }, secureStorage: false, version: __APP_VERSION__, providers: { fal: 'fal.ai', byteplus: 'BytePlus ModelArk', mock: 'Demo (simulado)' } }),
+    init: async () => ({ settings, state: engine.snapshot(false), logs: [...logs], keys: { fal: false, byteplus: false, gemini: false }, secureStorage: false, version: __APP_VERSION__, mode: 'demo' as const, providers: { fal: 'fal.ai', byteplus: 'BytePlus ModelArk', mock: 'Demo (simulado)' } }),
     saveSettings: async (p) => { settings = { ...settings, ...p }; engine.pump(); return settings; },
     setKey: async () => ({ fal: false, byteplus: false, gemini: false }),
     testProvider: async () => ({ ok: true, message: 'Modo demo activo' }),

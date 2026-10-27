@@ -32,8 +32,15 @@ const api = {
   enhance: (prompts: string[]) => invoke('gemini:enhance', prompts),
   exportLogs: (text: string) => invoke('logs:export', text),
   clearLogs: () => invoke('logs:clear'),
+  importText: (fileName: string, content: string, onePerLine: boolean) => invoke('import:text', fileName, content, onePerLine),
+  remoteInfo: () => invoke('remote:info'),
+  remoteSet: (patch: unknown) => invoke('remote:set', patch),
+  remoteRegen: () => invoke('remote:regen'),
   onState: on('state'),
   onLog: on('log'),
+  onSettings: on('settings'),
+  onKeys: on('keys'),
+  onRemote: on('remote'),
 };
 
 contextBridge.exposeInMainWorld('studio', api);

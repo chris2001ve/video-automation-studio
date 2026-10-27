@@ -3,6 +3,7 @@ import { useState } from 'react';
 import type { ProviderId, Settings } from '../../core/types';
 import type { KeyName, StudioApi } from '../api';
 import type { T } from '../i18n';
+import { RemotePanel } from './RemotePanel';
 
 const KEY_INFO: { id: KeyName; label: string; url: string; provider?: ProviderId }[] = [
   { id: 'fal', label: 'fal.ai', url: 'https://fal.ai/dashboard/keys', provider: 'fal' },
@@ -39,6 +40,7 @@ export function SettingsModal({ t, api, settings, save, keys, setKeys, secure, p
           <button className="btn btn-ghost h-9 w-9 p-0" onClick={onClose} title={t('close')}><X className="h-5 w-5" /></button>
         </div>
 
+        <RemotePanel t={t} api={api} notify={notify} />
         <h3 className="panel-title mb-1"><KeyRound className="h-4 w-4 text-accent" /> {t('apiKeys')}</h3>
         <p className="mb-3 text-xs text-slate-400">{t('apiKeysHint')}</p>
         {!secure && <p className="mb-3 rounded-lg border border-amber-500/50 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">{t('insecure')}</p>}
@@ -79,7 +81,7 @@ export function SettingsModal({ t, api, settings, save, keys, setKeys, secure, p
             <label className="label">{t('output')}</label>
             <div className="flex gap-2">
               <input className="input truncate text-xs" value={settings.outputDir} readOnly title={settings.outputDir} />
-              <button className="btn" onClick={async () => { const d = await api.chooseFolder(); if (d) save({ outputDir: d }); }}><FolderOpen className="h-4 w-4" /> {t('change')}</button>
+              {window.studio && <button className="btn" onClick={async () => { const d = await api.chooseFolder(); if (d) save({ outputDir: d }); }}><FolderOpen className="h-4 w-4" /> {t('change')}</button>}
             </div>
           </div>
           <div>

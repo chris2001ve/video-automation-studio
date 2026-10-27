@@ -46,6 +46,21 @@ npm run dev        # abre la app en modo desarrollo (Vite + Electron)
 
 Para probar sin gastar créditos, elige el proveedor **Demo (simulado)**.
 
+## Controlar desde el celular (misma Wi-Fi)
+
+La app de escritorio puede abrir un pequeño servidor en tu red local para que el celular use la misma interfaz y controle la cola del PC en tiempo real.
+
+1. En el PC abre **Ajustes → Controlar desde el celular** y activa el interruptor.
+2. Escanea el código QR con la cámara del celular (o abre la dirección `http://IP-del-PC:8787` en el navegador del celular y escribe el código de acceso).
+3. Desde el celular puedes escribir o importar prompts, cambiar la configuración, iniciar, pausar, detener, reintentar y ver el progreso y los registros. Los videos se guardan en el PC.
+
+Seguridad y red:
+
+- Viene desactivado. Cada acción exige el código de acceso de 8 caracteres; tras 10 intentos fallidos la IP queda bloqueada 60 s. Usa **Nuevo código** para expulsar a todos los celulares conectados.
+- Desde el celular no se puede elegir la carpeta de salida, abrir archivos del PC ni cambiar el acceso remoto.
+- Solo funciona dentro de tu red local (HTTP sin cifrar): no lo expongas a Internet.
+- Firewall: Windows pregunta la primera vez; permite **redes privadas**. En Zorin/Ubuntu con ufw activo: `sudo ufw allow 8787/tcp`.
+
 ## Descargar los instaladores
 
 Cada versión publicada en **Releases** incluye:

@@ -30,6 +30,12 @@ const es = {
   queueCfg: 'Cola y reintentos', maxRetries: 'Reintentos máximos', pollInterval: 'Consultar estado cada (s)', rpm: 'Límite de envíos por minuto ({p})',
   pricing: 'Precio por segundo de video en USD ({p})', models: 'Modelos de {p} (uno por línea)', language: 'Idioma', geminiModel: 'Modelo de Gemini', close: 'Cerrar',
   details_prompt: 'Prompt', details_params: 'Parámetros', details_task: 'ID de tarea', details_error: 'Último error', details_file: 'Archivo',
+  remoteTitle: 'Controlar desde el celular', remoteSub: 'Usa la app desde tu celular conectado a la misma red Wi-Fi.',
+  remoteScan: 'Escanea el código QR con la cámara del celular. También puedes abrir la dirección en el navegador del celular y escribir el código.',
+  remoteUrl: 'Dirección en tu red', remoteCode: 'Código de acceso', remoteRegen: 'Nuevo código', remoteRegenDone: 'Código cambiado: los celulares deben volver a conectarse',
+  remoteClients: '{n} celular(es) conectado(s)', remotePort: 'Puerto', remoteNoNet: 'Sin red Wi-Fi detectada', copy: 'Copiar enlace',
+  remoteHelp: 'Solo funciona dentro de tu red local. Si no conecta, permite la app en el firewall (Windows lo pregunta la primera vez; en Zorin: sudo ufw allow 8787/tcp). Cambia el código si lo compartiste por error.',
+  pairTitle: 'Conectar con tu PC', pairBody: 'Escribe el código de acceso que aparece en la app del PC, en Ajustes → Controlar desde el celular.', pairConnect: 'Conectar',
 };
 type Dict = typeof es;
 const en: Dict = {
@@ -63,6 +69,12 @@ const en: Dict = {
   queueCfg: 'Queue & retries', maxRetries: 'Max retries', pollInterval: 'Poll status every (s)', rpm: 'Submissions per minute limit ({p})',
   pricing: 'Price per video second in USD ({p})', models: '{p} models (one per line)', language: 'Language', geminiModel: 'Gemini model', close: 'Close',
   details_prompt: 'Prompt', details_params: 'Parameters', details_task: 'Task ID', details_error: 'Last error', details_file: 'File',
+  remoteTitle: 'Control from your phone', remoteSub: 'Use the app from a phone on the same Wi-Fi network.',
+  remoteScan: 'Scan the QR code with your phone camera, or open the address in the phone browser and type the code.',
+  remoteUrl: 'Address on your network', remoteCode: 'Access code', remoteRegen: 'New code', remoteRegenDone: 'Code changed: phones must reconnect',
+  remoteClients: '{n} phone(s) connected', remotePort: 'Port', remoteNoNet: 'No Wi-Fi network detected', copy: 'Copy link',
+  remoteHelp: 'Works only inside your local network. If it does not connect, allow the app in the firewall (Windows asks the first time; on Zorin: sudo ufw allow 8787/tcp). Change the code if you shared it by mistake.',
+  pairTitle: 'Connect to your PC', pairBody: 'Type the access code shown in the PC app under Settings → Control from your phone.', pairConnect: 'Connect',
 };
 
 export type TKey = keyof Dict;
