@@ -1,4 +1,4 @@
-import { CheckCircle2, FolderOpen, KeyRound, Network, Plug, X } from 'lucide-react';
+import { CheckCircle2, FolderOpen, KeyRound, Network, Plug, X, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import type { ProviderId, Settings } from '../../core/types';
 import type { KeyName, StudioApi } from '../api';
@@ -18,7 +18,7 @@ export function SettingsModal({ t, api, settings, save, keys, setKeys, secure, p
   const [draft, setDraft] = useState<Record<KeyName, string>>({ fal: '', byteplus: '', gemini: '' });
   const [testing, setTesting] = useState<string | null>(null);
   const [proxy, setProxy] = useState(settings.proxyUrl);
-  const real: ProviderId[] = ['fal', 'byteplus'];
+  const real: ProviderId[] = ['pollinations', 'fal', 'byteplus'];
 
   const saveKey = async (id: KeyName, value: string) => {
     setKeys(await api.setKey(id, value));
@@ -44,6 +44,21 @@ export function SettingsModal({ t, api, settings, save, keys, setKeys, secure, p
         <h3 className="panel-title mb-1"><KeyRound className="h-4 w-4 text-accent" /> {t('apiKeys')}</h3>
         <p className="mb-3 text-xs text-slate-400">{t('apiKeysHint')}</p>
         {!secure && <p className="mb-3 rounded-lg border border-amber-500/50 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">{t('insecure')}</p>}
+        
+        {/* Proveedor Gratuito Activo */}
+        <div className="mb-3 rounded-xl border border-emerald-500/30 bg-emerald-950/20 p-3">
+          <div className="mb-1 flex items-center justify-between text-sm">
+            <span className="flex items-center gap-2 font-semibold text-emerald-300">
+              <Sparkles className="h-4 w-4 text-emerald-400" /> Gratuito (Pollinations.ai)
+            </span>
+            <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[11px] font-medium text-emerald-300">Sin API Key</span>
+          </div>
+          <p className="mb-2 text-xs text-slate-400">Generación de video libre y sin coste de saldo. Solo requiere tu clave de Google Gemini para redactar guiones.</p>
+          <button className="btn btn-sm" disabled={testing === 'pollinations'} onClick={() => test('pollinations')}>
+            <Plug className="h-3.5 w-3.5" /> {testing === 'pollinations' ? 'Probando...' : t('test')}
+          </button>
+        </div>
+
         <div className="space-y-3">
           {KEY_INFO.map((k) => (
             <div key={k.id} className="rounded-xl border border-ink-600 bg-ink-900/60 p-3">
@@ -97,11 +112,11 @@ export function SettingsModal({ t, api, settings, save, keys, setKeys, secure, p
           <Num label={t('maxRetries')} value={settings.maxRetries} min={0} max={10} onChange={(v) => save({ maxRetries: v })} />
           <Num label={t('pollInterval')} value={settings.pollIntervalSec} min={2} max={120} onChange={(v) => save({ pollIntervalSec: v })} />
           {real.map((p) => (
-            <Num key={'r' + p} label={t('rpm', { p: providers[p] })} value={settings.requestsPerMinute[p]} min={0} max={600}
+            <Num key={'r' + p} label={t('rpm', { p: providers[p] || p })} value={settings.requestsPerMinute[p] ?? 10} min={0} max={600}
               onChange={(v) => save({ requestsPerMinute: { ...settings.requestsPerMinute, [p]: v } })} />
           ))}
           {real.map((p) => (
-            <Num key={'c' + p} label={t('pricing', { p: providers[p] })} value={settings.pricePerSecond[p]} min={0} max={10} step={0.001}
+            <Num key={'c' + p} label={t('pricing', { p: providers[p] || p })} value={settings.pricePerSecond[p] ?? 0} min={0} max={10} step={0.001}
               onChange={(v) => save({ pricePerSecond: { ...settings.pricePerSecond, [p]: v } })} />
           ))}
         </div>
@@ -110,12 +125,15 @@ export function SettingsModal({ t, api, settings, save, keys, setKeys, secure, p
         <div className="grid gap-3 sm:grid-cols-2">
           {real.map((p) => (
             <div key={p}>
-              <label className="label">{t('models', { p: providers[p] })}</label>
-              <textarea className="input h-24 font-mono text-xs" defaultValue={settings.models[p].join('\n')}
+              <label className="label">{t('models', { p: providers[p] || p })}</label>
+              <textarea className="input h-24 font-mono text-xs" defaultValue={(settings.models[p] || ['default']).join('\n')}
                 onBlur={(e) => {
                   const list = e.target.value.split('\n').map((s) => s.trim()).filter(Boolean);
                   if (!list.length) return;
-                  save({ models: { ...settings.models, [p]: list }, selectedModel: { ...settings.selectedModel, [p]: list.includes(settings.selectedModel[p]) ? settings.selectedModel[p] : list[0] } });
+                  save({ 
+                    models: { ...settings.models, [p]: list }, 
+                    selectedModel: { ...settings.selectedModel, [p]: list.includes(settings.selectedModel[p]) ? settings.selectedModel[p] : list[0] } 
+                  });
                 }} />
             </div>
           ))}
