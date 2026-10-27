@@ -84,7 +84,7 @@ async function downloadVideo(url: string | null, job: Job): Promise<string> {
   }
   const file = path.join(dir, outputFileName(ts, job.index, job.variant, job.prompt));
   
-  // Headers de descarga autenticada para evitar el error HTTP 402
+  // Headers de descarga autenticada para Pollinations si existe clave
   const headers: Record<string, string> = {};
   const polliKey = secrets.get('pollinations' as any);
   if (polliKey) {
@@ -105,7 +105,7 @@ async function downloadVideo(url: string | null, job: Job): Promise<string> {
   return file;
 }
 
-// Conexión al proveedor: pollinations recibe la clave si existe, o pasa vacía
+// Conexión al proveedor
 function providerFor(id: ProviderId) {
   const isFree = id === 'mock';
   const key = isFree ? '' : (secrets.get(id as any) || '');
@@ -131,7 +131,7 @@ function initEngine() {
   if (resumable) log('info', `${resumable} tarea(s) en curso recuperadas; pulsa "Iniciar" para retomarlas`);
 }
 
-// ---------- ventana maximizada para pantallas de TV ----------
+// ---------- ventana maximizada y ajustada para pantallas de TV ----------
 function createWindow() {
   win = new BrowserWindow({
     width: 1280, height: 720, minWidth: 1024, minHeight: 640,
@@ -143,6 +143,11 @@ function createWindow() {
   });
   
   win.maximize();
+
+  // Ajuste de zoom al 85% para evitar cortes por overscan en pantallas de TV
+  win.webContents.once('did-finish-load', () => {
+    win?.webContents.setZoomFactor(0.85);
+  });
 
   win.webContents.setWindowOpenHandler(({ url }) => { shell.openExternal(url); return { action: 'deny' }; });
   if (isDev) win.loadURL(process.env.VITE_DEV_SERVER_URL!);
@@ -158,7 +163,7 @@ const handle = (ch: string, fn: Handler) => { handlers[ch] = fn; };
 function getAllKeysStatus() {
   return {
     ...secrets.status(),
-    pollinations: true, // Reporta siempre activo para no bloquear la UI
+    pollinations: true,
   };
 }
 
