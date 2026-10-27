@@ -1,0 +1,74 @@
+const es = {
+  allTime: 'Total: {n} videos', today: '{n} hoy', direct: 'Conexión directa', directSub: 'Sin proxy', proxy: 'Proxy activo', proxySub: 'Tráfico por proxy',
+  serviceTrouble: 'El servicio de {p} está teniendo problemas',
+  serviceTroubleBody: '{p} está respondiendo "{m}" ({n} error(es) en {min} min). El problema es del proveedor, no de este equipo: el lote sigue reintentando solo.',
+  modeSingle: 'Prompt único', modeMulti: 'Múltiples prompts', modePreview: 'Vista previa de ideas', queuedChip: 'En cola: {n}',
+  import: 'Importar .TXT / .CSV', folder: 'Carpeta', settings: 'Ajustes',
+  promptsTitle: 'Prompts de video ({n} prompts)', promptTitle: 'Prompt de video', chars: '{n} caracteres',
+  onePerLine: 'Un prompt por línea', detected: '✓ {n} prompts detectados', noneDetected: 'Escribe o importa prompts',
+  placeholderMulti: 'Escribe tus prompts. Sepáralos con una línea en blanco o con ---\n(o activa "Un prompt por línea").',
+  placeholderSingle: 'Describe el video: sujeto, acción, escenario, movimiento de cámara, luz, estilo…',
+  negative: 'Prompt negativo (se aplica a todos)', negativePh: 'deformed anatomy, extra fingers, flicker, watermark, subtitles, on-screen text…',
+  enhance: 'Mejorar con Gemini', enhancing: 'Mejorando…', addToQueue: 'Agregar a la cola', clearEditor: 'Limpiar',
+  previewEmpty: 'No hay prompts para mostrar. Escríbelos en "Múltiples prompts" o importa un archivo.', remove: 'Quitar',
+  genSettings: 'Configuración de generación', provider: 'Proveedor', model: 'Modelo', video: 'Video', length: 'Duración del video',
+  secVideo: '{n} s', aspect: 'Relación de aspecto', resolution: 'Resolución', videos: 'Videos', allHint: '0 = todos', perPrompt: 'Videos / prompt',
+  audio: 'Generar audio', performance: 'Rendimiento', parallel: 'Videos en paralelo', recommended: 'Recomendado', estimate: 'Costo estimado',
+  estimateNone: 'Configura el precio por segundo en Ajustes', keyMissing: 'Falta la API key de {p}. Agrégala en Ajustes.',
+  queueTitle: 'Cola de lotes y estado de archivos', queueSummary: 'Procesando {a} de {t} · Guardados: {s}/{t} · Activos: {a} · Pendientes: {p}',
+  colPrompt: 'Prompt', colProvider: 'Proveedor', colStatus: 'Estado', colOutput: 'Salida / progreso', emptyQueue: 'La cola está vacía. Agrega prompts y pulsa "Iniciar".',
+  clearFinished: 'Limpiar terminados', retryFailed: 'Reintentar fallidos',
+  st_waiting: 'En espera', st_sending: 'Enviando', st_rendering: 'Renderizando', st_downloading: 'Descargando', st_saved: 'Guardado', st_error: 'Error', st_review: 'Necesita revisión', st_cancelled: 'Cancelado',
+  open: 'Abrir', reveal: 'Mostrar en carpeta', retry: 'Reintentar', cancel: 'Cancelar', duplicate: 'Duplicar', details: 'Detalles',
+  activity: 'Actividad', saved: 'Guardados', active: 'Activos', failed: 'Fallidos', queued: 'En cola',
+  start: 'Iniciar generación por lotes', pause: 'Pausar', resume: 'Reanudar', stop: 'Detener',
+  liveActivity: 'Actividad en vivo', exportLogs: 'Exportar registros', copyLogs: 'Copiar registros', clearLogs: 'Limpiar registros', copied: 'Copiado',
+  // ajustes
+  apiKeys: 'API keys', apiKeysHint: 'Se guardan cifradas en el llavero del sistema. Nunca salen de este equipo salvo hacia la API correspondiente.',
+  insecure: 'El cifrado del sistema no está disponible: las claves se guardan solo codificadas.', save: 'Guardar', test: 'Probar conexión', saved_: 'Guardada', notSet: 'Sin configurar', delete: 'Eliminar',
+  network: 'Red', proxyUrl: 'Proxy opcional (http://usuario:clave@host:puerto)', output: 'Carpeta de salida', change: 'Cambiar', openFolder: 'Abrir',
+  queueCfg: 'Cola y reintentos', maxRetries: 'Reintentos máximos', pollInterval: 'Consultar estado cada (s)', rpm: 'Límite de envíos por minuto ({p})',
+  pricing: 'Precio por segundo de video en USD ({p})', models: 'Modelos de {p} (uno por línea)', language: 'Idioma', geminiModel: 'Modelo de Gemini', close: 'Cerrar',
+  details_prompt: 'Prompt', details_params: 'Parámetros', details_task: 'ID de tarea', details_error: 'Último error', details_file: 'Archivo',
+};
+type Dict = typeof es;
+const en: Dict = {
+  allTime: 'All-time: {n} videos', today: '{n} today', direct: 'Direct connection', directSub: 'No proxy in use', proxy: 'Proxy enabled', proxySub: 'Traffic via proxy',
+  serviceTrouble: "{p}'s service is having trouble",
+  serviceTroubleBody: '{p} is answering "{m}" ({n} errors over {min} min). This is on the provider\'s side, not this PC: your batch keeps retrying.',
+  modeSingle: 'Single prompt', modeMulti: 'Multiple prompts', modePreview: 'Preview ideas', queuedChip: 'Queued: {n}',
+  import: 'Import .TXT / .CSV', folder: 'Folder', settings: 'Settings',
+  promptsTitle: 'Video prompts ({n} prompts)', promptTitle: 'Video prompt', chars: '{n} characters',
+  onePerLine: 'One prompt per line', detected: '✓ {n} prompts detected', noneDetected: 'Type or import prompts',
+  placeholderMulti: 'Type your prompts. Separate them with a blank line or ---\n(or enable "One prompt per line").',
+  placeholderSingle: 'Describe the video: subject, action, setting, camera movement, lighting, style…',
+  negative: 'Negative prompt (applies to all)', negativePh: 'deformed anatomy, extra fingers, flicker, watermark, subtitles, on-screen text…',
+  enhance: 'Enhance with Gemini', enhancing: 'Enhancing…', addToQueue: 'Add to queue', clearEditor: 'Clear',
+  previewEmpty: 'No prompts to show. Type them in "Multiple prompts" or import a file.', remove: 'Remove',
+  genSettings: 'Generation settings', provider: 'Provider', model: 'Model', video: 'Video', length: 'Video length',
+  secVideo: '{n} s', aspect: 'Aspect ratio', resolution: 'Resolution', videos: 'Videos', allHint: '0 = all', perPrompt: 'Videos / prompt',
+  audio: 'Generate audio', performance: 'Performance', parallel: 'Parallel videos', recommended: 'Recommended', estimate: 'Estimated cost',
+  estimateNone: 'Set the price per second in Settings', keyMissing: 'Missing {p} API key. Add it in Settings.',
+  queueTitle: 'Live batch queue & file status', queueSummary: 'Processing {a} of {t} · Saved: {s}/{t} · Active: {a} · Pending: {p}',
+  colPrompt: 'Prompt', colProvider: 'Provider', colStatus: 'Status', colOutput: 'Output / progress', emptyQueue: 'Queue is empty. Add prompts and press "Start".',
+  clearFinished: 'Clear finished', retryFailed: 'Retry failed',
+  st_waiting: 'Waiting', st_sending: 'Sending', st_rendering: 'Rendering', st_downloading: 'Downloading', st_saved: 'Saved', st_error: 'Error', st_review: 'Needs review', st_cancelled: 'Cancelled',
+  open: 'Open', reveal: 'Show in folder', retry: 'Retry', cancel: 'Cancel', duplicate: 'Duplicate', details: 'Details',
+  activity: 'Activity', saved: 'Saved', active: 'Active', failed: 'Failed', queued: 'Queued',
+  start: 'Start batch generation', pause: 'Pause', resume: 'Resume', stop: 'Stop',
+  liveActivity: 'Live activity', exportLogs: 'Export logs', copyLogs: 'Copy logs', clearLogs: 'Clear logs', copied: 'Copied',
+  apiKeys: 'API keys', apiKeysHint: 'Stored encrypted in the OS keychain. They only leave this PC to reach the matching API.',
+  insecure: 'OS encryption is unavailable: keys are only encoded.', save: 'Save', test: 'Test connection', saved_: 'Saved', notSet: 'Not set', delete: 'Delete',
+  network: 'Network', proxyUrl: 'Optional proxy (http://user:pass@host:port)', output: 'Output folder', change: 'Change', openFolder: 'Open',
+  queueCfg: 'Queue & retries', maxRetries: 'Max retries', pollInterval: 'Poll status every (s)', rpm: 'Submissions per minute limit ({p})',
+  pricing: 'Price per video second in USD ({p})', models: '{p} models (one per line)', language: 'Language', geminiModel: 'Gemini model', close: 'Close',
+  details_prompt: 'Prompt', details_params: 'Parameters', details_task: 'Task ID', details_error: 'Last error', details_file: 'File',
+};
+
+export type TKey = keyof Dict;
+export function makeT(lang: 'es' | 'en') {
+  const d = lang === 'en' ? en : es;
+  return (k: TKey, vars: Record<string, string | number> = {}) =>
+    d[k].replace(/\{(\w+)\}/g, (_, v) => String(vars[v] ?? ''));
+}
+export type T = ReturnType<typeof makeT>;

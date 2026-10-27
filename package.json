@@ -1,0 +1,70 @@
+{
+  "name": "video-automation-studio",
+  "productName": "Video Automation Studio",
+  "version": "1.0.0",
+  "description": "Generación de videos con IA por lotes (Seedance y otros) usando APIs oficiales",
+  "main": "dist-electron/main.js",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build:main": "node scripts/build-main.mjs",
+    "build:renderer": "vite build",
+    "build": "npm run typecheck && npm run build:renderer && npm run build:main",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "start": "electron .",
+    "dist": "npm run build && electron-builder",
+    "dist:win": "npm run build && electron-builder --win",
+    "dist:mac": "npm run build && electron-builder --mac"
+  },
+  "build": {
+    "appId": "com.tuisladigital.videoautomationstudio",
+    "productName": "Video Automation Studio",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**",
+      "dist-electron/**",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.video"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ]
+    }
+  },
+  "dependencies": {
+    "undici": "^6.29.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^4.7.0",
+    "autoprefixer": "^10.6.2",
+    "electron": "^41.7.1",
+    "electron-builder": "^26.18.0",
+    "esbuild": "^0.28.2",
+    "lucide-react": "^1.62.0",
+    "postcss": "^8.5.32",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "tailwindcss": "^3.4.19",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.5",
+    "vitest": "^3.2.7"
+  }
+}

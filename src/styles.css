@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root { height: 100%; }
+body { @apply text-slate-200 antialiased; font-family: Inter, 'Segoe UI', system-ui, sans-serif;
+  background: radial-gradient(1200px 600px at 10% -10%, #0f2b4d 0%, transparent 60%), radial-gradient(900px 500px at 110% 10%, #0b2f45 0%, transparent 55%), #050d19; }
+
+@layer components {
+  .panel { @apply rounded-2xl border border-ink-600/70 bg-ink-850/80 backdrop-blur shadow-[inset_0_1px_0_rgba(255,255,255,.04)]; }
+  .panel-title { @apply flex items-center gap-2 text-[15px] font-semibold text-slate-100; }
+  
+  .btn { @apply whitespace-nowrap inline-flex items-center justify-center gap-2 rounded-xl border border-ink-600 bg-ink-800 px-3.5 py-2 text-sm font-medium text-slate-200 transition hover:border-ink-500 hover:bg-ink-700 disabled:cursor-not-allowed disabled:opacity-40; }
+  .btn-accent { @apply border-accent/70 bg-accent/90 text-ink-950 hover:bg-accent hover:border-accent shadow-glow; }
+  .btn-danger { @apply border-rose-500/60 bg-rose-600/80 text-white hover:bg-rose-500; }
+  .btn-ghost { @apply border-transparent bg-transparent hover:bg-ink-700/70; }
+  .btn-sm { @apply px-2.5 py-1.5 text-xs rounded-lg; }
+  .chip { @apply inline-flex items-center gap-1.5 rounded-xl border border-ink-600 bg-ink-800/80 px-3 py-2 text-sm; }
+  .seg { @apply rounded-xl border border-ink-600 bg-ink-800 px-3 py-1.5 text-sm font-medium text-slate-300 transition hover:border-ink-500; }
+  .seg-on { @apply border-accent/80 bg-accent/90 text-ink-950 shadow-glow; }
+  .input { @apply w-full rounded-xl border border-ink-600 bg-ink-900/80 px-3 py-1.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:border-accent/70 focus:ring-2 focus:ring-accent/20; }
+  .label { @apply mb-1.5 block text-xs font-medium text-slate-400; }
+  .section { @apply mb-2 text-[11px] font-bold uppercase tracking-wider text-slate-400; }
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: #1c3a5f; border-radius: 8px; border: 2px solid transparent; background-clip: content-box; }
+::-webkit-scrollbar-track { background: transparent; }
+input[type=range] { accent-color: #22d3ee; }
