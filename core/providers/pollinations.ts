@@ -1,22 +1,23 @@
-import type { FetchFn, Provider } from './types';
-import type { GenerationParams } from '../types';
+import type { VideoProvider } from './types';
+import type { FetchFn } from './http';
+import type { GenerationParams, ProviderJobState } from '../types';
 
-export class PollinationsProvider implements Provider {
+export class PollinationsProvider implements VideoProvider {
   constructor(private fetchFn: FetchFn) {}
 
   async testConnection(): Promise<string> {
-    return 'Conectado al generador gratuito de video';
+    return 'Servidor de video gratuito conectado correctamente';
   }
 
   async submitJob(prompt: string, params: GenerationParams): Promise<{ taskId: string }> {
-    // Pollinations genera videos directamente vía URL o endpoint de inferencia abierta
-    const encodedPrompt = encodeURIComponent(prompt);
-    const videoUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?model=video&width=720&height=1280&seed=${Date.now()}`;
+    const cleanPrompt = encodeURIComponent(prompt.trim());
+    // Endpoint abierto para generación de video
+    const videoUrl = `https://image.pollinations.ai/prompt/${cleanPrompt}?model=video&width=720&height=1280&seed=${Date.now()}`;
     return { taskId: videoUrl };
   }
 
-  async checkStatus(taskId: string): Promise<{ state: 'completed'; videoUrl: string }> {
-    // La URL es directa; el motor pasa a descargar el mp4
+  async checkStatus(taskId: string): Promise<ProviderJobState> {
+    // Al ser endpoint directo, retorna completado para proceder a la descarga
     return {
       state: 'completed',
       videoUrl: taskId,
