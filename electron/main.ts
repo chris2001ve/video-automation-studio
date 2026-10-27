@@ -78,7 +78,6 @@ async function downloadVideo(url: string | null, job: Job): Promise<string> {
     createdAt: new Date(job.createdAt).toISOString(), savedAt: new Date(ts).toISOString(), sourceUrl: url,
   };
   if (!url) {
-    // Modo demo: no hay video real; se guarda solo el archivo de metadatos.
     const file = path.join(dir, outputFileName(ts, job.index, job.variant, job.prompt, 'demo.json'));
     fs.writeFileSync(file, JSON.stringify({ ...meta, demo: true }, null, 2));
     return file;
@@ -93,8 +92,11 @@ async function downloadVideo(url: string | null, job: Job): Promise<string> {
   return file;
 }
 
+// PROVEEDOR AJUSTADO: pollinations y mock no requieren API key
 function providerFor(id: ProviderId) {
-  return createProvider(id, id === 'mock' ? '' : secrets.get(id), netFetch);
+  const isFree = id === 'mock' || id === 'pollinations';
+  const key = isFree ? '' : (secrets.get(id as any) || '');
+  return createProvider(id, key, netFetch);
 }
 
 function initEngine() {
@@ -116,33 +118,45 @@ function initEngine() {
   if (resumable) log('info', `${resumable} tarea(s) en curso recuperadas; pulsa "Iniciar" para retomarlas`);
 }
 
-// ---------- ventana ----------
+// ---------- ventana (con auto-maximizado para TV/Monitores) ----------
 function createWindow() {
   win = new BrowserWindow({
-    width: 1440, height: 920, minWidth: 1100, minHeight: 720,
+    width: 1280, height: 720, minWidth: 1024, minHeight: 640,
     backgroundColor: '#07111f',
     title: 'Video Automation Studio',
     autoHideMenuBar: true,
+    resizable: true,
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: false },
   });
+  
+  // Ajuste a bordes de pantalla
+  win.maximize();
+
   win.webContents.setWindowOpenHandler(({ url }) => { shell.openExternal(url); return { action: 'deny' }; });
   if (isDev) win.loadURL(process.env.VITE_DEV_SERVER_URL!);
   else win.loadFile(path.join(__dirname, '../dist/index.html'));
 }
 
 // ---------- IPC ----------
-// Canales que el celular NO puede usar (abren diálogos o archivos en el PC, o cambian el acceso remoto).
 const DESKTOP_ONLY = new Set(['dialog:folder', 'dialog:import', 'shell:open', 'shell:reveal', 'shell:openFolder', 'logs:export', 'remote:info', 'remote:set', 'remote:regen']);
 const REMOTE_PROTECTED_SETTINGS: (keyof Settings)[] = ['remoteEnabled', 'remotePort', 'remoteToken', 'outputDir'];
 const handlers: Record<string, Handler> = {};
 const handle = (ch: string, fn: Handler) => { handlers[ch] = fn; };
+
+// Asegura que el frontend reciba pollinations siempre en true
+function getAllKeysStatus() {
+  return {
+    ...secrets.status(),
+    pollinations: true,
+  };
+}
 
 function broadcastSettings() {
   win?.webContents.send('settings', settings);
   remote?.broadcast('settings', settings);
 }
 function broadcastKeys() {
-  const k = secrets.status();
+  const k = getAllKeysStatus();
   win?.webContents.send('keys', k);
   remote?.broadcast('keys', k);
 }
@@ -150,7 +164,7 @@ function broadcastKeys() {
 function registerIpc() {
   handle('init', () => ({
     settings, state: engine.snapshot(!!settings.proxyUrl), logs: logs.slice(-500),
-    keys: secrets.status(), secureStorage: secrets.isSecure(), version: app.getVersion(), providers: PROVIDER_LABELS,
+    keys: getAllKeysStatus(), secureStorage: secrets.isSecure(), version: app.getVersion(), providers: PROVIDER_LABELS,
   }));
   handle('settings:save', (patch: Partial<Settings>) => {
     const proxyChanged = patch.proxyUrl !== undefined && patch.proxyUrl !== settings.proxyUrl;
@@ -166,7 +180,7 @@ function registerIpc() {
     secrets.set(name, value.trim());
     log('info', `API key de ${name} ${value ? 'guardada' : 'eliminada'}`);
     broadcastKeys();
-    return secrets.status();
+    return getAllKeysStatus();
   });
   handle('provider:test', async (id: ProviderId) => {
     try { return { ok: true, message: await providerFor(id).testConnection() }; }
@@ -222,7 +236,6 @@ function registerIpc() {
   });
   handle('logs:clear', () => { logs.length = 0; });
 
-  // Importar desde el contenido de un archivo (lo usa el celular, que no tiene acceso a los diálogos del PC).
   handle('import:text', (fileName: string, content: string, onePerLine: boolean) => {
     const name = path.basename(String(fileName || 'prompts.txt'));
     const items = importText(name, String(content ?? ''), !!onePerLine);
