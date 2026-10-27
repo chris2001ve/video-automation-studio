@@ -1,30 +1,56 @@
-import type { GenerationParams, ProviderId } from '../types';
+import type { GenerationParams } from '../types';
 import type { FetchFn } from './http';
 import type { CreatedTask, TaskStatus, VideoProvider } from './types';
 
 export class PollinationsProvider implements VideoProvider {
-  readonly id: ProviderId = 'pollinations';
-  readonly label = 'Gratuito (Pollinations)';
+  readonly id = 'pollinations';
 
-  constructor(private fetchFn: FetchFn) {}
+  constructor(private readonly fetchFn: FetchFn) {}
 
   async testConnection(): Promise<string> {
-    return 'Servidor de video gratuito conectado correctamente';
+    try {
+      const res = await this.fetchFn('https://image.pollinations.ai/prompt/test?width=32&height=32&nologo=true');
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return 'Conexión exitosa con Pollinations.ai';
+    } catch (e: any) {
+      throw new Error(`Fallo de conexión: ${e?.message ?? e}`);
+    }
   }
 
-  async createTask(prompt: string, _params: GenerationParams): Promise<CreatedTask> {
+  async createTask(prompt: string, params: GenerationParams): Promise<CreatedTask> {
+    const seed = Math.floor(Math.random() * 2147483647);
     const cleanPrompt = encodeURIComponent(prompt.trim());
-    const videoUrl = `https://image.pollinations.ai/prompt/${cleanPrompt}?model=video&width=720&height=1280&seed=${Date.now()}`;
+    
+    // Dimensiones según relación de aspecto
+    let width = 720;
+    let height = 1280;
+    if (params.aspectRatio === '16:9') {
+      width = 1280;
+      height = 720;
+    } else if (params.aspectRatio === '1:1') {
+      width = 1024;
+      height = 1024;
+    }
+
+    // URL directa de generación gratuita
+    const videoUrl = `https://image.pollinations.ai/prompt/${cleanPrompt}?width=${width}&height=${height}&seed=${seed}&nologo=true`;
+
     return {
-      taskId: videoUrl,
-      responseUrl: videoUrl,
+      taskId: `polli_${Date.now()}_${seed}`,
+      videoUrl,
     };
   }
 
-  async getStatus(task: CreatedTask): Promise<TaskStatus> {
+  async pollStatus(task: CreatedTask): Promise<TaskStatus> {
+    if (task.videoUrl) {
+      return {
+        state: 'completed',
+        videoUrl: task.videoUrl,
+      };
+    }
     return {
-      state: 'succeeded',
-      videoUrl: task.taskId,
+      state: 'failed',
+      error: 'No se generó la URL de video en Pollinations',
     };
   }
 
