@@ -15,35 +15,58 @@
     "test": "vitest run",
     "start": "electron .",
     "dist": "npm run build && electron-builder",
-    "dist:win": "npm run build && electron-builder --win",
+    "dist:win": "npm run build && electron-builder --win --publish never",
     "dist:mac": "npm run build && electron-builder --mac"
   },
   "build": {
     "appId": "com.tuisladigital.videoautomationstudio",
     "productName": "Video Automation Studio",
     "directories": {
-      "output": "release"
+      "output": "release",
+      "buildResources": "build"
     },
     "files": [
       "dist/**",
       "dist-electron/**",
       "package.json"
     ],
+    "artifactName": "Video-Automation-Studio-Setup-${version}.${ext}",
     "win": {
       "target": [
-        "nsis"
-      ]
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Video Automation Studio",
+      "installerLanguages": [
+        "es_ES",
+        "en_US"
+      ],
+      "language": "3082"
     },
     "mac": {
       "target": [
         "dmg"
       ],
-      "category": "public.app-category.video"
+      "category": "public.app-category.video",
+      "icon": "build/icon.png"
     },
     "linux": {
       "target": [
         "AppImage"
-      ]
+      ],
+      "icon": "build/icon.png"
     }
   },
   "dependencies": {
@@ -66,5 +89,8 @@
     "typescript": "^5.9.3",
     "vite": "^6.4.5",
     "vitest": "^3.2.7"
+  },
+  "author": {
+    "name": "chris2001ve"
   }
 }

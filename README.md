@@ -46,6 +46,12 @@ npm run dev        # abre la app en modo desarrollo (Vite + Electron)
 
 Para probar sin gastar créditos, elige el proveedor **Demo (simulado)**.
 
+## Descargar el instalador de Windows
+
+Cada versión publicada incluye el instalador `Video-Automation-Studio-Setup-x.y.z.exe` en la sección **Releases** del repositorio. Como no está firmado digitalmente, Windows SmartScreen puede mostrar "Windows protegió tu PC": pulsa **Más información → Ejecutar de todas formas**.
+
+Para generar una versión nueva: `git tag v1.0.1 && git push --tags`. También puedes ejecutarlo a mano en **Actions → Instalador de Windows → Run workflow**.
+
 ## Compilar instaladores
 
 ```bash
