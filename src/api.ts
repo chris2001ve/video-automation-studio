@@ -1,6 +1,6 @@
 import type { EngineState, GenerationParams, LogEntry, PromptItem, ProviderId, Settings } from '../core/types';
 
-export type KeyName = 'fal' | 'byteplus' | 'gemini';
+export type KeyName = 'fal' | 'byteplus' | 'gemini' | 'pollinations';
 
 export interface InitData {
   settings: Settings;
