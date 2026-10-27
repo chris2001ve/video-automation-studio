@@ -2,14 +2,18 @@ import type { GenerationParams } from '../types';
 import type { FetchFn } from './http';
 import type { CreatedTask, TaskStatus, VideoProvider } from './types';
 
+// Si prefieres dejarla fija directamente aquí:
+const POLLINATIONS_API_KEY = 'sk_RjejKTrZBBczDVGDEArA6RBYxGEFWLZS'; 
+
 export class PollinationsProvider implements VideoProvider {
   readonly id = 'pollinations';
 
-  constructor(private readonly fetchFn: FetchFn) {}
+  constructor(private readonly apiKey: string = POLLINATIONS_API_KEY, private readonly fetchFn: FetchFn) {}
 
   async testConnection(): Promise<string> {
     try {
-      const res = await this.fetchFn('https://image.pollinations.ai/prompt/test?width=32&height=32&nologo=true');
+      const keyParam = this.apiKey ? `&key=${this.apiKey}` : '';
+      const res = await this.fetchFn(`https://image.pollinations.ai/prompt/test?width=32&height=32&nologo=true${keyParam}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return 'Conexión exitosa con Pollinations.ai';
     } catch (e: any) {
@@ -21,7 +25,6 @@ export class PollinationsProvider implements VideoProvider {
     const seed = Math.floor(Math.random() * 2147483647);
     const cleanPrompt = encodeURIComponent(prompt.trim());
     
-    // Dimensiones según relación de aspecto
     let width = 720;
     let height = 1280;
     if (params.aspectRatio === '16:9') {
@@ -32,8 +35,9 @@ export class PollinationsProvider implements VideoProvider {
       height = 1024;
     }
 
-    // URL directa de generación gratuita
-    const videoUrl = `https://image.pollinations.ai/prompt/${cleanPrompt}?width=${width}&height=${height}&seed=${seed}&nologo=true`;
+    // Se agrega el parámetro ?key= con tu API key autenticada
+    const keyParam = this.apiKey ? `&key=${this.apiKey}` : '';
+    const videoUrl = `https://image.pollinations.ai/prompt/${cleanPrompt}?model=video&width=${width}&height=${height}&seed=${seed}&nologo=true${keyParam}`;
 
     return {
       taskId: `polli_${Date.now()}_${seed}`,
@@ -50,11 +54,11 @@ export class PollinationsProvider implements VideoProvider {
     }
     return {
       state: 'failed',
-      error: 'No se generó la URL de video en Pollinations',
+      error: 'No se generó la URL de video',
     };
   }
 
   async cancel(_task: CreatedTask): Promise<void> {
-    // No requiere cancelación en servidor
+    // No requiere cancelación remota
   }
 }
