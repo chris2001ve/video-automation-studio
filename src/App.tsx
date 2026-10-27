@@ -123,7 +123,7 @@ export default function App() {
   const queuedCount = state.jobs.filter((j) => ['waiting', 'sending', 'rendering', 'downloading'].includes(j.state)).length;
 
   return (
-    <div className="flex min-h-full flex-col gap-3 p-3 pb-6 lg:h-full lg:p-4 lg:pb-4">
+    <div className="flex min-h-full flex-col gap-3 p-3 pb-6 lg:p-4 lg:pb-4 tall:h-full">
       <Header t={t} version={boot.version} state={state} onSettings={() => setShowSettings(true)} />
       {!window.studio && (
         <div className="rounded-xl border border-accent/40 bg-accent/10 px-3 py-2 text-xs text-cyan-100">
@@ -153,7 +153,7 @@ export default function App() {
           <LogConsole t={t} logs={logs} api={api} onClear={() => setLogs([])} notify={notify} />
         </div>
         <div className="contents lg:flex lg:min-h-0 lg:flex-col lg:gap-3">
-          <div className="order-2 lg:order-none lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:rounded-2xl">
+          <div className="order-2 lg:order-none tall:min-h-0 tall:flex-1 tall:overflow-y-auto lg:rounded-2xl">
           <GenerationSettings
             t={t} settings={settings} save={save} providers={boot.providers} keys={keys}
             promptCount={prompts.length} videosToQueue={videosToQueue} setVideosToQueue={setVideosToQueue}
