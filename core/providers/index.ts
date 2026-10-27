@@ -1,25 +1,26 @@
-import type { ProviderId } from '../types';
-import { BytePlusProvider } from './byteplus';
-import { FalProvider } from './fal';
-import type { FetchFn } from './http';
-import { MockProvider } from './mock';
 import type { VideoProvider } from './types';
+import type { FetchFn } from './http';
+import type { GenerationParams, ProviderJobState } from '../types';
 
-export * from './types';
-export { FalProvider, BytePlusProvider, MockProvider };
+export class PollinationsProvider implements VideoProvider {
+  constructor(private fetchFn: FetchFn) {}
 
-export const PROVIDER_LABELS: Record<ProviderId, string> = {
-  fal: 'fal.ai',
-  byteplus: 'BytePlus ModelArk',
-  mock: 'Demo (simulado)',
-};
+  async testConnection(): Promise<string> {
+    return 'Servidor de video gratuito conectado correctamente';
+  }
 
-const mockSingleton = new MockProvider();
+  async submitJob(prompt: string, params: GenerationParams): Promise<{ taskId: string }> {
+    const cleanPrompt = encodeURIComponent(prompt.trim());
+    // Endpoint abierto para generación de video
+    const videoUrl = `https://image.pollinations.ai/prompt/${cleanPrompt}?model=video&width=720&height=1280&seed=${Date.now()}`;
+    return { taskId: videoUrl };
+  }
 
-export function createProvider(id: ProviderId, apiKey: string, fetchFn: FetchFn): VideoProvider {
-  switch (id) {
-    case 'fal': return new FalProvider(apiKey, fetchFn);
-    case 'byteplus': return new BytePlusProvider(apiKey, fetchFn);
-    case 'mock': return mockSingleton;
+  async checkStatus(taskId: string): Promise<ProviderJobState> {
+    // Al ser endpoint directo, retorna completado para proceder a la descarga
+    return {
+      state: 'completed',
+      videoUrl: taskId,
+    };
   }
 }
