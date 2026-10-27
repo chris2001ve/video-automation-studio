@@ -83,7 +83,20 @@ async function downloadVideo(url: string | null, job: Job): Promise<string> {
     return file;
   }
   const file = path.join(dir, outputFileName(ts, job.index, job.variant, job.prompt));
-  const res = await undiciFetch(url, { dispatcher, signal: AbortSignal.timeout(300_000) });
+  
+  // Headers de descarga autenticada para evitar el error HTTP 402
+  const headers: Record<string, string> = {};
+  const polliKey = secrets.get('pollinations' as any);
+  if (polliKey) {
+    headers['Authorization'] = `Bearer ${polliKey}`;
+  }
+
+  const res = await undiciFetch(url, { 
+    dispatcher, 
+    headers, 
+    signal: AbortSignal.timeout(300_000) 
+  });
+
   if (!res.ok || !res.body) throw new Error(`HTTP ${res.status}`);
   const tmp = file + '.part';
   await pipeline(Readable.fromWeb(res.body as any), fs.createWriteStream(tmp));
@@ -92,9 +105,9 @@ async function downloadVideo(url: string | null, job: Job): Promise<string> {
   return file;
 }
 
-// PROVEEDOR AJUSTADO: pollinations y mock no requieren API key
+// Conexión al proveedor: pollinations recibe la clave si existe, o pasa vacía
 function providerFor(id: ProviderId) {
-  const isFree = id === 'mock' || id === 'pollinations';
+  const isFree = id === 'mock';
   const key = isFree ? '' : (secrets.get(id as any) || '');
   return createProvider(id, key, netFetch);
 }
@@ -118,7 +131,7 @@ function initEngine() {
   if (resumable) log('info', `${resumable} tarea(s) en curso recuperadas; pulsa "Iniciar" para retomarlas`);
 }
 
-// ---------- ventana (con auto-maximizado para TV/Monitores) ----------
+// ---------- ventana maximizada para pantallas de TV ----------
 function createWindow() {
   win = new BrowserWindow({
     width: 1280, height: 720, minWidth: 1024, minHeight: 640,
@@ -129,7 +142,6 @@ function createWindow() {
     webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: false },
   });
   
-  // Ajuste a bordes de pantalla
   win.maximize();
 
   win.webContents.setWindowOpenHandler(({ url }) => { shell.openExternal(url); return { action: 'deny' }; });
@@ -143,11 +155,10 @@ const REMOTE_PROTECTED_SETTINGS: (keyof Settings)[] = ['remoteEnabled', 'remoteP
 const handlers: Record<string, Handler> = {};
 const handle = (ch: string, fn: Handler) => { handlers[ch] = fn; };
 
-// Asegura que el frontend reciba pollinations siempre en true
 function getAllKeysStatus() {
   return {
     ...secrets.status(),
-    pollinations: true,
+    pollinations: true, // Reporta siempre activo para no bloquear la UI
   };
 }
 
@@ -176,8 +187,8 @@ function registerIpc() {
     broadcastSettings();
     return settings;
   });
-  handle('keys:set', (name: 'fal' | 'byteplus' | 'gemini', value: string) => {
-    secrets.set(name, value.trim());
+  handle('keys:set', (name: 'fal' | 'byteplus' | 'gemini' | 'pollinations', value: string) => {
+    secrets.set(name as any, value.trim());
     log('info', `API key de ${name} ${value ? 'guardada' : 'eliminada'}`);
     broadcastKeys();
     return getAllKeysStatus();
