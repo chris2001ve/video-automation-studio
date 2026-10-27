@@ -9,7 +9,7 @@ const RATIOS: AspectRatio[] = ['9:16', '16:9', '1:1', '4:3', '3:4', '21:9'];
 const RESOLUTIONS: Resolution[] = ['480p', '720p', '1080p'];
 
 export function GenerationSettings({ t, settings, save, providers, keys, promptCount, videosToQueue, setVideosToQueue }: {
-  t: T; settings: Settings; save: (p: Partial<Settings>) => void; providers: Record<ProviderId, string>; keys: Record<KeyName, boolean>;
+  t: T; settings: Settings; save: (p: Partial<Settings>) => void; providers: Record<ProviderId, string>; keys: Record<string, boolean>;
   promptCount: number; videosToQueue: number; setVideosToQueue: (n: number) => void;
 }) {
   const pv = settings.provider;
@@ -17,26 +17,42 @@ export function GenerationSettings({ t, settings, save, providers, keys, promptC
   const price = settings.pricePerSecond[pv] ?? 0;
   const cost = estimateCost(count, settings.variantsPerPrompt, settings.durationSec, price);
   const rec = recommendedParallel(settings.requestsPerMinute[pv] ?? 0);
-  const ready = pv === 'mock' || keys[pv as KeyName];
+  
+  // Proveedores gratuitos (mock y pollinations) siempre están listos sin API Key
+  const isFree = pv === 'mock' || pv === 'pollinations';
+  const ready = isFree || Boolean(keys[pv as KeyName]);
+
+  const availableModels = settings.models[pv] || ['pollinations-video-free'];
+  const currentModel = settings.selectedModel[pv] || availableModels[0];
 
   return (
     <section className="panel p-3 sm:p-4">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="panel-title"><Cpu className="h-4 w-4 text-accent" /> {t('genSettings')}</h2>
-        <span className={`text-xs font-semibold ${ready ? 'text-emerald-400' : 'text-amber-300'}`}>● {providers[pv]}</span>
+        <span className={`text-xs font-semibold ${ready ? 'text-emerald-400' : 'text-amber-300'}`}>
+          ● {providers[pv] || pv} {isFree ? '(Gratis)' : ''}
+        </span>
       </div>
 
       <div className="mb-2.5 grid grid-cols-2 gap-2">
         <div>
           <label className="label">{t('provider')}</label>
           <select className="input" value={pv} onChange={(e) => save({ provider: e.target.value as ProviderId })}>
-            {(Object.keys(providers) as ProviderId[]).map((id) => <option key={id} value={id}>{providers[id]}</option>)}
+            {(Object.keys(providers) as ProviderId[]).map((id) => (
+              <option key={id} value={id}>{providers[id]}</option>
+            ))}
           </select>
         </div>
         <div>
           <label className="label">{t('model')}</label>
-          <select className="input" value={settings.selectedModel[pv]} onChange={(e) => save({ selectedModel: { ...settings.selectedModel, [pv]: e.target.value } })}>
-            {settings.models[pv].map((m) => <option key={m} value={m}>{m}</option>)}
+          <select 
+            className="input" 
+            value={currentModel} 
+            onChange={(e) => save({ selectedModel: { ...settings.selectedModel, [pv]: e.target.value } })}
+          >
+            {availableModels.map((m) => (
+              <option key={m} value={m}>{m}</option>
+            ))}
           </select>
         </div>
       </div>
@@ -105,7 +121,7 @@ export function GenerationSettings({ t, settings, save, providers, keys, promptC
         <span className="flex items-center gap-2 text-slate-400"><Sparkles className="h-4 w-4 text-accent" /> {t('estimate')}</span>
         {price > 0
           ? <span className="font-semibold text-slate-100">≈ US$ {cost.toFixed(2)} <span className="text-xs font-normal text-slate-500">({count * settings.variantsPerPrompt} × {settings.durationSec}s)</span></span>
-          : <span className="text-xs text-slate-500">{t('estimateNone')}</span>}
+          : <span className="text-xs text-emerald-400 font-medium">Gratis (Sin costo de API)</span>}
       </div>
     </section>
   );
