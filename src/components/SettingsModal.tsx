@@ -32,8 +32,8 @@ export function SettingsModal({ t, api, settings, save, keys, setKeys, secure, p
   };
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 p-6 backdrop-blur-sm" onClick={onClose}>
-      <div className="panel max-h-full w-full max-w-3xl overflow-y-auto p-6" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 p-2 backdrop-blur-sm sm:p-6" onClick={onClose}>
+      <div className="panel max-h-full w-full max-w-3xl overflow-y-auto p-4 sm:p-6" onClick={(e) => e.stopPropagation()}>
         <div className="mb-5 flex items-center justify-between">
           <h2 className="text-xl font-bold text-white">{t('settings')}</h2>
           <button className="btn btn-ghost h-9 w-9 p-0" onClick={onClose} title={t('close')}><X className="h-5 w-5" /></button>
@@ -49,8 +49,8 @@ export function SettingsModal({ t, api, settings, save, keys, setKeys, secure, p
                 <a className="font-semibold text-slate-100 hover:text-accent" href={k.url} target="_blank" rel="noreferrer">{k.label} ↗</a>
                 {keys[k.id] ? <span className="flex items-center gap-1 text-xs text-emerald-400"><CheckCircle2 className="h-3.5 w-3.5" /> {t('saved_')}</span> : <span className="text-xs text-slate-500">{t('notSet')}</span>}
               </div>
-              <div className="flex gap-2">
-                <input className="input font-mono" type="password" autoComplete="off" placeholder={keys[k.id] ? '••••••••••••' : 'API key'}
+              <div className="flex flex-wrap gap-2">
+                <input className="input min-w-0 flex-1 basis-48 font-mono" type="password" autoComplete="off" placeholder={keys[k.id] ? '••••••••••••' : 'API key'}
                   value={draft[k.id]} onChange={(e) => setDraft({ ...draft, [k.id]: e.target.value })} />
                 <button className="btn btn-accent" disabled={!draft[k.id].trim()} onClick={() => saveKey(k.id, draft[k.id])}>{t('save')}</button>
                 {k.provider && <button className="btn" disabled={!keys[k.id] || testing === k.provider} onClick={() => test(k.provider!)}><Plug className="h-4 w-4" /> {t('test')}</button>}
@@ -67,7 +67,7 @@ export function SettingsModal({ t, api, settings, save, keys, setKeys, secure, p
         </div>
 
         <h3 className="panel-title mb-3 mt-6"><Network className="h-4 w-4 text-accent" /> {t('network')} · {t('output')}</h3>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid gap-3 sm:grid-cols-2">
           <div>
             <label className="label">{t('proxyUrl')}</label>
             <div className="flex gap-2">
@@ -91,7 +91,7 @@ export function SettingsModal({ t, api, settings, save, keys, setKeys, secure, p
         </div>
 
         <h3 className="panel-title mb-3 mt-6">{t('queueCfg')}</h3>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid gap-3 sm:grid-cols-2">
           <Num label={t('maxRetries')} value={settings.maxRetries} min={0} max={10} onChange={(v) => save({ maxRetries: v })} />
           <Num label={t('pollInterval')} value={settings.pollIntervalSec} min={2} max={120} onChange={(v) => save({ pollIntervalSec: v })} />
           {real.map((p) => (
@@ -105,7 +105,7 @@ export function SettingsModal({ t, api, settings, save, keys, setKeys, secure, p
         </div>
 
         <h3 className="panel-title mb-3 mt-6">{t('model')}</h3>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid gap-3 sm:grid-cols-2">
           {real.map((p) => (
             <div key={p}>
               <label className="label">{t('models', { p: providers[p] })}</label>

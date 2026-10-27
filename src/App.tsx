@@ -123,15 +123,22 @@ export default function App() {
   const queuedCount = state.jobs.filter((j) => ['waiting', 'sending', 'rendering', 'downloading'].includes(j.state)).length;
 
   return (
-    <div className="flex h-full flex-col gap-3 p-4">
+    <div className="flex min-h-full flex-col gap-3 p-3 pb-6 lg:h-full lg:p-4 lg:pb-4">
       <Header t={t} version={boot.version} state={state} onSettings={() => setShowSettings(true)} />
+      {!window.studio && (
+        <div className="rounded-xl border border-accent/40 bg-accent/10 px-3 py-2 text-xs text-cyan-100">
+          {settings.language === 'en'
+            ? 'Test mode in the browser: videos are simulated. Install the desktop app to generate real videos.'
+            : 'Modo de prueba en el navegador: los videos son simulados. Instala la app de escritorio para generar videos reales.'}
+        </div>
+      )}
       {state.serviceIssue && <ServiceBanner t={t} issue={state.serviceIssue} label={boot.providers[state.serviceIssue.provider]} />}
       <ModeBar
         t={t} mode={mode} setMode={setMode} queued={queuedCount}
         onImport={importFile} onFolder={() => api.openOutputFolder()} onSettings={() => setShowSettings(true)}
       />
-      <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1.45fr)_minmax(380px,1fr)] gap-3">
-        <div className="flex min-h-0 flex-col gap-3">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-3 lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(0,1.45fr)_minmax(380px,1fr)]">
+        <div className="contents lg:flex lg:min-h-0 lg:flex-col lg:gap-3">
           <PromptPanel
             t={t} mode={mode} text={text} setText={(v) => { setText(v); }} single={single} setSingle={setSingle}
             prompts={prompts} settings={settings} save={save} enhancing={enhancing} onEnhance={enhance}
@@ -145,8 +152,8 @@ export default function App() {
           <QueueTable t={t} state={state} api={api} providers={boot.providers} />
           <LogConsole t={t} logs={logs} api={api} onClear={() => setLogs([])} notify={notify} />
         </div>
-        <div className="flex min-h-0 flex-col gap-3">
-          <div className="min-h-0 flex-1 overflow-y-auto rounded-2xl">
+        <div className="contents lg:flex lg:min-h-0 lg:flex-col lg:gap-3">
+          <div className="order-2 lg:order-none lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:rounded-2xl">
           <GenerationSettings
             t={t} settings={settings} save={save} providers={boot.providers} keys={keys}
             promptCount={prompts.length} videosToQueue={videosToQueue} setVideosToQueue={setVideosToQueue}

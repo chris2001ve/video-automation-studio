@@ -20,7 +20,7 @@ export function GenerationSettings({ t, settings, save, providers, keys, promptC
   const ready = pv === 'mock' || keys[pv as KeyName];
 
   return (
-    <section className="panel p-4">
+    <section className="panel p-3 sm:p-4">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="panel-title"><Cpu className="h-4 w-4 text-accent" /> {t('genSettings')}</h2>
         <span className={`text-xs font-semibold ${ready ? 'text-emerald-400' : 'text-amber-300'}`}>● {providers[pv]}</span>

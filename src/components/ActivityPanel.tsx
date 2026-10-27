@@ -13,13 +13,13 @@ export function ActivityPanel({ t, state, onStart, onPause, onResume, onStop, ca
     else if (j.state !== 'cancelled') c.active++;
   }
   const card = (label: string, n: number, Icon: typeof Play, cls: string) => (
-    <div className={`flex flex-col items-center justify-center rounded-xl border px-2 py-2 ${cls}`}>
-      <div className="flex items-center gap-1.5 text-xs font-semibold"><Icon className="h-4 w-4" /> {label}</div>
-      <div className="mt-1 text-2xl font-bold text-white">{n}</div>
+    <div className={`flex min-w-0 flex-col items-center justify-center rounded-xl border px-1 py-2 sm:px-2 ${cls}`}>
+      <div className="flex max-w-full items-center gap-1 text-[11px] font-semibold sm:gap-1.5 sm:text-xs"><Icon className="hidden h-4 w-4 shrink-0 sm:block" /> <span className="truncate">{label}</span></div>
+      <div className="mt-1 text-xl font-bold text-white sm:text-2xl">{n}</div>
     </div>
   );
   return (
-    <section className="panel p-4">
+    <section className="panel order-3 p-3 sm:p-4 lg:order-none">
       <h2 className="panel-title mb-3"><Activity className="h-4 w-4 text-accent" /> {t('activity')}</h2>
       <div className="grid grid-cols-4 gap-2">
         {card(t('saved'), c.saved, CheckCircle2, 'border-emerald-500/60 bg-emerald-600/25 text-emerald-200')}
@@ -29,7 +29,7 @@ export function ActivityPanel({ t, state, onStart, onPause, onResume, onStop, ca
       </div>
       <div className="mt-3 flex gap-2">
         {!state.running && (
-          <button className="btn btn-accent h-11 flex-1 text-base" onClick={onStart} disabled={!canStart}><Play className="h-5 w-5" /> {t('start')}</button>
+          <button className="btn btn-accent h-11 min-w-0 flex-1 text-base" onClick={onStart} disabled={!canStart}><Play className="h-5 w-5" /> <span className="truncate">{t('start')}</span></button>
         )}
         {state.running && !state.paused && (
           <button className="btn h-11 flex-1 text-base" onClick={onPause}><Pause className="h-5 w-5" /> {t('pause')}</button>
@@ -37,7 +37,7 @@ export function ActivityPanel({ t, state, onStart, onPause, onResume, onStop, ca
         {state.running && state.paused && (
           <button className="btn btn-accent h-11 flex-1 text-base" onClick={onResume}><Play className="h-5 w-5" /> {t('resume')}</button>
         )}
-        <button className="btn btn-danger h-11 w-28 text-base" onClick={onStop} disabled={!state.running}><Square className="h-4 w-4" /> {t('stop')}</button>
+        <button className="btn btn-danger h-11 shrink-0 px-4 text-base sm:w-28" onClick={onStop} disabled={!state.running}><Square className="h-4 w-4" /> {t('stop')}</button>
       </div>
     </section>
   );
